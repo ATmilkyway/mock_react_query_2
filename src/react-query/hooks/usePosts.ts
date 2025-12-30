@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { InfiniteData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import axios, { all } from "axios";
 import { useEffect, useState } from "react";
 
 interface Post {
@@ -10,23 +10,26 @@ interface Post {
 }
 
 interface PostQuery {
-  page: number;
   pageSize: number;
 }
 
 const usePosts = (query: PostQuery) =>
-  useQuery<Post[], Error>({
+  useInfiniteQuery<Post[], Error, InfiniteData<Post[]>, ["posts", PostQuery], number>({
     queryKey: ["posts", query],
-    queryFn: () =>
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) =>
       axios
         .get<Post[]>("https://jsonplaceholder.typicode.com/posts", {
           params: {
-            _start: (query.page - 1) * query.pageSize,
+            _start: (pageParam - 1) * query.pageSize,
             _limit: query.pageSize,
           },
         })
         .then((res) => res.data),
     placeholderData: (prev) => prev,
+    getNextPageParam: (lastPage, allPage) => {
+      return lastPage.length > 0 ? allPage.length + 1 : undefined;
+    },
   });
 
 export default usePosts;
