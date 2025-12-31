@@ -7,22 +7,38 @@ import { useRef } from "react";
 import { Todo } from "./hooks/useTodos";
 import axios from "axios";
 
+interface AddTodoContext {
+  previousTodos: Todo[];
+}
+
 const TodoForm = () => {
   const queryclient = useQueryClient();
   const ref = useRef<HTMLInputElement>(null);
-  const addTodo = useMutation({
+  const addTodo = useMutation<Todo, Error, Todo, AddTodoContext>({
     mutationFn: (todo: Todo) =>
       axios
-        .post<Todo>("https://jsonplaceholder.typicode.com/todosd", todo)
+        .post<Todo>("https://jsonplaceholder.typicode.com/todos", todo)
         .then((res) => res.data),
-    onSuccess: (savedTodo, newTodo) => {
-      // queryclient.invalidateQueries({ queryKey: ["posts"] });
+    onMutate: (newTodo) => {
+      const previousTodos = queryclient.getQueryData<Todo[]>(["todos"]) || [];
       queryclient.setQueryData<Todo[]>(["todos"], (todos) => [
-        savedTodo,
+        newTodo,
         ...(todos || []),
       ]);
+      if (ref.current) ref.current.value = "";
+
+      return { previousTodos };
     },
-    onError: () => {},
+    onSuccess: (savedTodo, newTodo) => {
+      // queryclient.invalidateQueries({ queryKey: ["posts"] });
+      queryclient.setQueryData<Todo[]>(["todos"], (todos) =>
+        todos?.map((todo) => (todo === newTodo ? savedTodo : todo))
+      );
+    },
+    onError: (error, newTodo, context) => {
+      if (!context) return;
+      queryclient.setQueryData<Todo[]>(["todos"], context.previousTodos);
+    },
   });
 
   return (
