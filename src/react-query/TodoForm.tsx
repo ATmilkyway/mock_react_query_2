@@ -1,17 +1,58 @@
-import { useRef } from 'react';
+import {
+  QueryClient,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { useRef } from "react";
+import { Todo } from "./hooks/useTodos";
+import axios from "axios";
 
 const TodoForm = () => {
+  const queryclient = useQueryClient();
   const ref = useRef<HTMLInputElement>(null);
+  const addTodo = useMutation({
+    mutationFn: (todo: Todo) =>
+      axios
+        .post<Todo>("https://jsonplaceholder.typicode.com/todosd", todo)
+        .then((res) => res.data),
+    onSuccess: (savedTodo, newTodo) => {
+      // queryclient.invalidateQueries({ queryKey: ["posts"] });
+      queryclient.setQueryData<Todo[]>(["todos"], (todos) => [
+        savedTodo,
+        ...(todos || []),
+      ]);
+    },
+    onError: () => {},
+  });
 
   return (
-    <form className="row mb-3">
-      <div className="col">
-        <input ref={ref} type="text" className="form-control" />
-      </div>
-      <div className="col">
-        <button className="btn btn-primary">Add</button>
-      </div>
-    </form>
+    <>
+      {addTodo.error && (
+        <div className="alert alert-danger" role="alert">
+          {addTodo.error.message}
+        </div>
+      )}
+      <form
+        className="row mb-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (ref.current && ref.current.value)
+            addTodo.mutate({
+              id: 0,
+              title: ref.current?.value,
+              userId: 1,
+              completed: false,
+            });
+        }}
+      >
+        <div className="col">
+          <input ref={ref} type="text" className="form-control" />
+        </div>
+        <div className="col">
+          <button className="btn btn-primary">Add</button>
+        </div>
+      </form>
+    </>
   );
 };
 
