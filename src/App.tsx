@@ -5,15 +5,13 @@ import TodoForm from "./react-query/TodoForm";
 import TodoList from "./react-query/TodoList";
 import Counter from "./state-management/Counter";
 import LoginStatus from "./state-management/LoginStatus";
-import TaskList from "./state-management/TaskList";
-import taskReducer from "./state-management/reducers/taskReducer";
-import TaskContext from "./state-management/contexts/taskContext";
+import TaskList from "./state-management/tasks/TaskList";
 import NavBar from "./state-management/NavBar";
 import HomePage from "./state-management/HomePage";
 import authReducer from "./state-management/reducers/authReducer";
 import AuthContext from "./state-management/contexts/authContext";
 import AuthProvider from "./state-management/AuthProvider";
-import TaskProvider from "./state-management/TaskProvider";
+import TaskProvider from "./state-management/tasks/TaskProvider";
 
 function App() {
   return (
