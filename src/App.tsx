@@ -13,10 +13,9 @@ import HomePage from "./state-management/HomePage";
 import authReducer from "./state-management/reducers/authReducer";
 import AuthContext from "./state-management/contexts/authContext";
 import AuthProvider from "./state-management/AuthProvider";
+import TaskProvider from "./state-management/TaskProvider";
 
 function App() {
-  const [tasks, taskDispatch] = useReducer(taskReducer, []);
-
   return (
     <>
       {/* <TodoForm />
@@ -25,10 +24,10 @@ function App() {
       {/* <TaskList /> */}
 
       <AuthProvider>
-        <TaskContext.Provider value={{ tasks, dispatch: taskDispatch }}>
+        <TaskProvider>
           <NavBar />
           <HomePage />
-        </TaskContext.Provider>
+        </TaskProvider>
       </AuthProvider>
     </>
   );
