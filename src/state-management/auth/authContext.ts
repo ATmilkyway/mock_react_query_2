@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import { UserAction } from "../reducers/authReducer";
-
+import { UserAction } from "./AuthProvider";
+ 
 interface AuthContextType {
   user: string;
   dispatch: React.Dispatch<UserAction>;
