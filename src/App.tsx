@@ -13,8 +13,8 @@ function App() {
       {/* <TaskList /> */}
 
       <TaskProvider>
-        <Counter />
         <NavBar />
+        <Counter />
         <HomePage />
       </TaskProvider>
     </>
