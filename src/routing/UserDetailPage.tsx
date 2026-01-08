@@ -1,4 +1,7 @@
-const UserDetailPage = () => {
+interface Props {
+  id: number;
+}
+const UserDetailPage = ({ id }: Props) => {
   return <p>User</p>;
 };
 
